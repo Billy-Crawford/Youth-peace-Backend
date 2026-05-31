@@ -14,6 +14,7 @@ urlpatterns = [
     path("api/posts/", include("social.urls")),
     path("api/messages/", include("messaging.urls")),
     path("api/alerts/",include("alerts.urls")),
+    path("api/academy/",include("academy.urls"),),
 ]
 
 if settings.DEBUG:
