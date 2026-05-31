@@ -13,6 +13,7 @@ urlpatterns = [
     path("api/auth/", include("accounts.urls")),
     path("api/posts/", include("social.urls")),
     path("api/messages/", include("messaging.urls")),
+    path("api/alerts/",include("alerts.urls")),
 ]
 
 if settings.DEBUG:
