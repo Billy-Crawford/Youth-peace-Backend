@@ -6,22 +6,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
-    path(
-        "admin/",
-        admin.site.urls,
-    ),
+    path("admin/", admin.site.urls),
 
-    path(
-        "api/auth/",
-        include("accounts.urls"),
-    ),
-
-    path(
-        "api/posts/",
-        include("social.urls"),
-    ),
-
+    path("api/auth/", include("accounts.urls")),
+    path("api/posts/", include("social.urls")),
+    path("api/messages/", include("messaging.urls")),
 ]
 
 if settings.DEBUG:
