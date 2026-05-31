@@ -1,7 +1,7 @@
 # social/serializers.py
 
 from rest_framework import serializers
-from .models import Post, Comment, Like, Initiative
+from .models import Post, Comment, Like, Initiative, ForumTopic, ForumReply
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -127,4 +127,72 @@ class InitiativeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["author"] = self.context["request"].user
         return super().create(validated_data)
+
+
+
+class ForumTopicSerializer(serializers.ModelSerializer):
+
+    author_name = serializers.SerializerMethodField()
+    replies_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ForumTopic
+
+        fields = (
+            "id",
+            "author",
+            "author_name",
+            "title",
+            "category",
+            "description",
+            "replies_count",
+            "created_at",
+            "updated_at",
+        )
+
+        read_only_fields = (
+            "id",
+            "author",
+            "created_at",
+            "updated_at",
+        )
+
+    def get_author_name(self, obj):
+        return f"{obj.author.first_name} {obj.author.last_name}"
+
+    def get_replies_count(self, obj):
+        return obj.replies.count()
+
+    def create(self, validated_data):
+        validated_data["author"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+
+class ForumReplySerializer(serializers.ModelSerializer):
+
+    author_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ForumReply
+
+        fields = (
+            "id",
+            "topic",
+            "author",
+            "author_name",
+            "content",
+            "created_at",
+        )
+
+        read_only_fields = (
+            "id",
+            "topic",
+            "author",
+            "created_at",
+        )
+
+    def get_author_name(self, obj):
+        return f"{obj.author.first_name} {obj.author.last_name}"
+
 

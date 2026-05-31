@@ -3,8 +3,9 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Post, Comment, Like, Initiative
-from .serializers import PostSerializer, CommentSerializer, InitiativeSerializer
+from .models import Post, Comment, Like, Initiative, ForumTopic, ForumReply
+from .serializers import PostSerializer, CommentSerializer, InitiativeSerializer, ForumTopicSerializer, \
+    ForumReplySerializer
 from .permissions import IsOwnerOrReadOnly
 
 from rest_framework.views import APIView
@@ -94,4 +95,41 @@ class InitiativeDetailView(generics.RetrieveUpdateDestroyAPIView):
     ]
 
     queryset = Initiative.objects.all()
+
+
+
+class ForumTopicListCreateView(generics.ListCreateAPIView):
+    serializer_class = ForumTopicSerializer
+    permission_classes = [IsAuthenticated]
+
+    queryset = ForumTopic.objects.all()
+
+
+class ForumTopicDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ForumTopicSerializer
+    permission_classes = [
+        IsAuthenticated,
+        IsOwnerOrReadOnly,
+    ]
+
+    queryset = ForumTopic.objects.all()
+
+
+class ForumReplyListCreateView(generics.ListCreateAPIView):
+    serializer_class = ForumReplySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ForumReply.objects.filter(
+            topic_id=self.kwargs["topic_id"]
+        )
+
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+            topic_id=self.kwargs["topic_id"]
+        )
+
+
+
 

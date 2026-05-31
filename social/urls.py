@@ -5,6 +5,7 @@ from django.urls import path
 from .views import (
     PostListCreateView,
     PostDetailView, CommentListCreateView, ToggleLikeView, InitiativeListCreateView, InitiativeDetailView,
+    ForumTopicListCreateView, ForumTopicDetailView, ForumReplyListCreateView,
 )
 
 urlpatterns = [
@@ -42,6 +43,24 @@ urlpatterns = [
         "initiatives/<uuid:pk>/",
         InitiativeDetailView.as_view(),
         name="initiative-detail",
+    ),
+
+    path(
+        "forum/topics/",
+        ForumTopicListCreateView.as_view(),
+        name="forum-topic-list",
+    ),
+
+    path(
+        "forum/topics/<uuid:pk>/",
+        ForumTopicDetailView.as_view(),
+        name="forum-topic-detail",
+    ),
+
+    path(
+        "forum/topics/<uuid:topic_id>/replies/",
+        ForumReplyListCreateView.as_view(),
+        name="forum-replies",
     ),
 ]
 

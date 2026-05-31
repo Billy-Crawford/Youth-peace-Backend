@@ -159,7 +159,6 @@ class Initiative(models.Model):
     def __str__(self):
         return self.title
 
-# social/models.py
 
 class ForumTopic(models.Model):
 
@@ -240,4 +239,5 @@ class ForumReply(models.Model):
     def __str__(self):
         return self.content[:30]
 
-    
+
+
