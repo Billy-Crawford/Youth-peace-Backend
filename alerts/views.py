@@ -1,5 +1,5 @@
 # alerts/views.py
-
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -66,67 +66,33 @@ class UpdateReportStatusView(APIView):
 
     permission_classes = [
         IsAuthenticated,
-        IsAdminOrOSC,
+        IsAdminOrOSC
     ]
 
-
-    def patch(
-            self,
-            request,
-            report_id
+    def post(
+        self,
+        request,
+        report_id
     ):
-        report = AlertReport.objects.get(
+
+        report = get_object_or_404(
+            AlertReport,
             id=report_id
         )
 
-        new_status = request.data.get(
+        status_value = request.data.get(
             "status"
         )
 
-        allowed_statuses = [
-            "PENDING",
-            "IN_REVIEW",
-            "RESOLVED",
-        ]
-
-        if new_status not in allowed_statuses:
-            return Response(
-                {
-                    "error":
-                        "Statut invalide."
-                },
-                status=400,
-            )
-
-        report.status = new_status
-
+        report.status = status_value
         report.save()
 
-        return Response(
-            {
-                "message":
-                    "Statut mis à jour."
-            }
-        )
-
-        report = AlertReport.objects.get(
-            id=report_id
-        )
-
-        new_status = request.data.get(
-            "status"
-        )
-
-        report.status = new_status
-
-        report.save()
-
-        return Response(
-            {
-                "message":
-                "Statut mis à jour."
-            }
-        )
+        return Response({
+            "message":
+                "Statut mis à jour.",
+            "status":
+                report.status
+        })
 
 
 class AlertStatisticsView(APIView):

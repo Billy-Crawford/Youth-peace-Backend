@@ -7,7 +7,8 @@ from .views import (
     CourseDetailView,
     CourseCreateView, ModuleListView, ModuleCreateView, ModuleDetailView, LessonListView, LessonCreateView,
     LessonDetailView, CourseUpdateDeleteView, QuizCreateView, QuestionCreateView, ChoiceCreateView, QuizDetailView,
-    SubmitQuizView, CompleteLessonView, CourseProgressView,
+    SubmitQuizView, CompleteLessonView, CourseProgressView, QuestionUpdateDeleteView, QuizUpdateDeleteView,
+    ChoiceUpdateDeleteView, LessonUpdateDeleteView, ModuleUpdateDeleteView,
 )
 
 urlpatterns = [
@@ -113,5 +114,23 @@ urlpatterns = [
         CourseProgressView.as_view(),
         name="course-progress",
     ),
+
+    path(
+        "modules/<uuid:pk>/edit/",
+        ModuleUpdateDeleteView.as_view()
+    ),
+
+    path(
+        "lessons/<uuid:pk>/edit/",
+        LessonUpdateDeleteView.as_view()
+    ),
+
+    path(
+        "quizzes/<uuid:pk>/edit/",
+        QuizUpdateDeleteView.as_view()
+    ),
+    path("questions/<uuid:pk>/edit/",QuestionUpdateDeleteView.as_view()),
+    path("choices/<uuid:pk>/edit/",ChoiceUpdateDeleteView.as_view()),
+    path("courses/<uuid:pk>/edit/",CourseUpdateDeleteView.as_view()),
 ]
 

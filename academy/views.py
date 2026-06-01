@@ -109,6 +109,19 @@ class ModuleCreateView(
             created_by=self.request.user
         )
 
+class ModuleUpdateDeleteView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = ModuleSerializer
+
+    permission_classes = [
+        IsAuthenticated,
+        IsOwnerOrAdmin,
+    ]
+
+    queryset = Module.objects.all()
+
 
 class LessonListView(
     generics.ListAPIView
@@ -154,6 +167,20 @@ class LessonCreateView(
         serializer.save(
             created_by=self.request.user
         )
+
+
+class LessonUpdateDeleteView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = LessonSerializer
+
+    permission_classes = [
+        IsAuthenticated,
+        IsOwnerOrAdmin,
+    ]
+
+    queryset = Lesson.objects.all()
 
 
 class CourseUpdateDeleteView(
@@ -214,6 +241,22 @@ class QuestionCreateView(
         )
 
 
+class QuestionUpdateDeleteView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = QuestionSerializer
+
+    permission_classes = [
+        IsAuthenticated,
+        IsOwnerOrAdmin,
+    ]
+
+    queryset = Question.objects.all()
+
+
+
+
 class ChoiceCreateView(
     generics.CreateAPIView
 ):
@@ -236,6 +279,21 @@ class ChoiceCreateView(
         )
 
 
+class ChoiceUpdateDeleteView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = ChoiceSerializer
+
+    permission_classes = [
+        IsAuthenticated,
+        IsOwnerOrAdmin,
+    ]
+
+    queryset = Choice.objects.all()
+
+
+
 class QuizDetailView(
     generics.RetrieveAPIView
 ):
@@ -244,6 +302,20 @@ class QuizDetailView(
 
     permission_classes = [
         IsAuthenticated
+    ]
+
+    queryset = Quiz.objects.all()
+
+
+class QuizUpdateDeleteView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = QuizSerializer
+
+    permission_classes = [
+        IsAuthenticated,
+        IsOwnerOrAdmin,
     ]
 
     queryset = Quiz.objects.all()

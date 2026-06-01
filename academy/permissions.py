@@ -28,10 +28,13 @@ class IsOwnerOrAdmin(BasePermission):
         obj
     ):
 
-        # ADMIN
         if request.user.role == "ADMIN":
             return True
 
-        # OSC propriétaire
-        return obj.created_by == request.user
+        return getattr(
+            obj,
+            "created_by",
+            None
+        ) == request.user
+
 
