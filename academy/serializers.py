@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import Course, Module, Lesson
+from .models import Course, Module, Lesson, Choice, Question, Quiz
 
 
 class CourseSerializer(
@@ -157,5 +157,110 @@ class CourseDetailSerializer(
             f"{obj.created_by.first_name} "
             f"{obj.created_by.last_name}"
         )
+
+
+class ChoiceSerializer(
+    serializers.ModelSerializer
+):
+
+    class Meta:
+        model = Choice
+
+        fields = (
+            "id",
+            "question",
+            "choice_text",
+            "is_correct",
+        )
+
+
+class QuestionSerializer(
+    serializers.ModelSerializer
+):
+
+    class Meta:
+        model = Question
+
+        fields = (
+            "id",
+            "quiz",
+            "question_text",
+        )
+
+
+class QuizSerializer(
+    serializers.ModelSerializer
+):
+
+    class Meta:
+        model = Quiz
+
+        fields = (
+            "id",
+            "course",
+            "title",
+            "passing_score",
+        )
+
+
+class ChoicePublicSerializer(
+    serializers.ModelSerializer
+):
+
+    class Meta:
+        model = Choice
+
+        fields = (
+            "id",
+            "choice_text",
+        )
+
+
+class QuestionPublicSerializer(
+    serializers.ModelSerializer
+):
+
+    choices = ChoicePublicSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = Question
+
+        fields = (
+            "id",
+            "question_text",
+            "choices",
+        )
+
+
+class QuizDetailSerializer(
+    serializers.ModelSerializer
+):
+
+    questions = QuestionPublicSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = Quiz
+
+        fields = (
+            "id",
+            "title",
+            "passing_score",
+            "questions",
+        )
+
+class QuizSubmissionSerializer(
+    serializers.Serializer
+):
+
+    answers = serializers.ListField(
+        child=serializers.DictField()
+    )
+
 
 

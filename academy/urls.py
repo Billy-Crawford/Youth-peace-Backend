@@ -6,7 +6,8 @@ from .views import (
     CourseListView,
     CourseDetailView,
     CourseCreateView, ModuleListView, ModuleCreateView, ModuleDetailView, LessonListView, LessonCreateView,
-    LessonDetailView, CourseUpdateDeleteView,
+    LessonDetailView, CourseUpdateDeleteView, QuizCreateView, QuestionCreateView, ChoiceCreateView, QuizDetailView,
+    SubmitQuizView,
 )
 
 urlpatterns = [
@@ -69,6 +70,36 @@ urlpatterns = [
         "courses/manage/<uuid:pk>/",
         CourseUpdateDeleteView.as_view(),
         name="course-manage",
+    ),
+
+    path(
+        "quizzes/create/",
+        QuizCreateView.as_view(),
+        name="quiz-create",
+    ),
+
+    path(
+        "questions/create/",
+        QuestionCreateView.as_view(),
+        name="question-create",
+    ),
+
+    path(
+        "choices/create/",
+        ChoiceCreateView.as_view(),
+        name="choice-create",
+    ),
+
+    path(
+        "quizzes/<uuid:pk>/",
+        QuizDetailView.as_view(),
+        name="quiz-detail",
+    ),
+
+    path(
+        "quizzes/<uuid:pk>/submit/",
+        SubmitQuizView.as_view(),
+        name="quiz-submit",
     ),
 ]
 
