@@ -4,6 +4,7 @@ import os
 
 from django.conf import settings
 
+from notifications.utils import create_notification
 from .models import Certificate
 from .utils import (
     generate_certificate_number,
@@ -74,6 +75,16 @@ def create_certificate(
     )
 
     certificate.save()
+
+    create_notification(
+        user=user,
+        title="Certificat obtenu",
+        message=(
+            f"Votre certificat pour "
+            f"'{course.title}' est disponible."
+        ),
+        notification_type="CERTIFICATE",
+    )
 
     return certificate
 

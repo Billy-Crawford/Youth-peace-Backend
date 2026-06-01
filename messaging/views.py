@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
+from notifications.utils import create_notification
 from .models import Conversation, Message
 from .serializers import (
     ConversationSerializer,
@@ -108,6 +109,7 @@ class ConversationDetailView(generics.RetrieveAPIView):
 
 
 class MessageListCreateView(generics.ListCreateAPIView):
+
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
@@ -117,10 +119,27 @@ class MessageListCreateView(generics.ListCreateAPIView):
         )
 
     def perform_create(self, serializer):
-        serializer.save(
+
+        message = serializer.save(
             sender=self.request.user,
             conversation_id=self.kwargs["conversation_id"]
         )
+
+        for participant in (
+            message.conversation.participants.all()
+        ):
+
+            if participant != self.request.user:
+
+                create_notification(
+                    user=participant,
+                    title="Nouveau message",
+                    message=(
+                        f"{self.request.user.get_full_name()} "
+                        f"vous a envoyé un message."
+                    ),
+                    notification_type="MESSAGE",
+                )
 
 class MarkConversationAsReadView(APIView):
 

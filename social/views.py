@@ -3,6 +3,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
+from notifications.utils import create_notification
 from .models import Post, Comment, Like, Initiative, ForumTopic, ForumReply
 from .serializers import PostSerializer, CommentSerializer, InitiativeSerializer, ForumTopicSerializer, \
     ForumReplySerializer
@@ -30,6 +31,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
 
 class CommentListCreateView(generics.ListCreateAPIView):
+
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -39,10 +41,25 @@ class CommentListCreateView(generics.ListCreateAPIView):
         )
 
     def perform_create(self, serializer):
-        serializer.save(
+
+        comment = serializer.save(
             author=self.request.user,
             post_id=self.kwargs["post_id"]
         )
+
+        post_author = comment.post.author
+
+        if post_author != self.request.user:
+
+            create_notification(
+                user=post_author,
+                title="Nouveau commentaire",
+                message=(
+                    f"{self.request.user.get_full_name()} "
+                    f"a commenté votre publication."
+                ),
+                notification_type="POST",
+            )
 
 class ToggleLikeView(APIView):
     permission_classes = [IsAuthenticated]
@@ -116,6 +133,7 @@ class ForumTopicDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ForumReplyListCreateView(generics.ListCreateAPIView):
+
     serializer_class = ForumReplySerializer
     permission_classes = [IsAuthenticated]
 
@@ -125,10 +143,25 @@ class ForumReplyListCreateView(generics.ListCreateAPIView):
         )
 
     def perform_create(self, serializer):
-        serializer.save(
+
+        reply = serializer.save(
             author=self.request.user,
             topic_id=self.kwargs["topic_id"]
         )
+
+        topic_author = reply.topic.author
+
+        if topic_author != self.request.user:
+
+            create_notification(
+                user=topic_author,
+                title="Nouvelle réponse",
+                message=(
+                    f"{self.request.user.get_full_name()} "
+                    f"a répondu à votre sujet."
+                ),
+                notification_type="FORUM",
+            )
 
 
 
