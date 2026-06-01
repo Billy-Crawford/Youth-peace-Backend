@@ -7,10 +7,10 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Course, Module, Lesson, Quiz, Question, Choice, QuizAttempt
+from .models import Course, Module, Lesson, Quiz, Question, Choice, QuizAttempt, LessonProgress
 from .serializers import (
     CourseSerializer, ModuleSerializer, LessonSerializer, CourseDetailSerializer, QuizSerializer, QuestionSerializer,
-    ChoiceSerializer, QuizDetailSerializer, QuizSubmissionSerializer,
+    ChoiceSerializer, QuizDetailSerializer, QuizSubmissionSerializer, LessonProgressSerializer,
 )
 from .permissions import (
     IsAdminOrOSC, IsOwnerOrAdmin,
@@ -274,6 +274,29 @@ class SubmitQuizView(APIView):
             pk=pk
         )
 
+        course = quiz.course
+
+        total_lessons = Lesson.objects.filter(
+            module__course=course
+        ).count()
+
+        completed_lessons = LessonProgress.objects.filter(
+            user=request.user,
+            lesson__module__course=course
+        ).count()
+
+        if completed_lessons < total_lessons:
+            return Response(
+                {
+                    "error": (
+                        "Vous devez terminer "
+                        "toutes les leçons avant "
+                        "de passer le quiz."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         answers = serializer.validated_data[
             "answers"
         ]
@@ -348,4 +371,92 @@ class SubmitQuizView(APIView):
 
 
 
+class CompleteLessonView(APIView):
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    def post(
+        self,
+        request,
+        lesson_id
+    ):
+
+        lesson = get_object_or_404(
+            Lesson,
+            id=lesson_id
+        )
+
+        progress, created = (
+            LessonProgress.objects.get_or_create(
+                user=request.user,
+                lesson=lesson
+            )
+        )
+
+        serializer = (
+            LessonProgressSerializer(
+                progress
+            )
+        )
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+
+
+
+class CourseProgressView(APIView):
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    def get(
+        self,
+        request,
+        course_id
+    ):
+
+        course = get_object_or_404(
+            Course,
+            id=course_id
+        )
+
+        total_lessons = Lesson.objects.filter(
+            module__course=course
+        ).count()
+
+        completed_lessons = (
+            LessonProgress.objects.filter(
+                user=request.user,
+                lesson__module__course=course
+            ).count()
+        )
+
+        percentage = 0
+
+        if total_lessons > 0:
+
+            percentage = round(
+                (
+                    completed_lessons
+                    / total_lessons
+                ) * 100,
+                2
+            )
+
+        return Response({
+            "course": course.title,
+            "total_lessons": total_lessons,
+            "completed_lessons": completed_lessons,
+            "progress_percentage": percentage,
+            "completed": (
+                completed_lessons
+                == total_lessons
+                and total_lessons > 0
+            )
+        })
 

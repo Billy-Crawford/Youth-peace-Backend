@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import Course, Module, Lesson, Choice, Question, Quiz
+from .models import Course, Module, Lesson, Choice, Question, Quiz, LessonProgress
 
 
 class CourseSerializer(
@@ -261,6 +261,26 @@ class QuizSubmissionSerializer(
     answers = serializers.ListField(
         child=serializers.DictField()
     )
+
+class LessonProgressSerializer(
+    serializers.ModelSerializer
+):
+
+    lesson_title = serializers.CharField(
+        source="lesson.title",
+        read_only=True
+    )
+
+    class Meta:
+        model = LessonProgress
+
+        fields = [
+            "id",
+            "lesson",
+            "lesson_title",
+            "completed",
+            "completed_at",
+        ]
 
 
 
