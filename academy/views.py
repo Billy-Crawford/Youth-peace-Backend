@@ -7,6 +7,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from certificates.services import create_certificate
 from .models import Course, Module, Lesson, Quiz, Question, Choice, QuizAttempt, LessonProgress
 from .serializers import (
     CourseSerializer, ModuleSerializer, LessonSerializer, CourseDetailSerializer, QuizSerializer, QuestionSerializer,
@@ -352,19 +353,43 @@ class SubmitQuizView(APIView):
             passed=passed
         )
 
+        certificate = None
+
+        if passed:
+            certificate = (
+                create_certificate(
+                    request.user,
+                    quiz.course,
+                    score
+                )
+            )
+
         return Response(
             {
-                "attempt_id": str(
-                    attempt.id
-                ),
-                "score": score,
-                "passed": passed,
+                "attempt_id":
+                    str(attempt.id),
+
+                "score":
+                    score,
+
+                "passed":
+                    passed,
+
                 "passing_score":
                     quiz.passing_score,
+
                 "correct_answers":
                     correct_answers,
+
                 "total_questions":
                     total_questions,
+
+                "certificate":
+                    (
+                        certificate.certificate_number
+                        if certificate
+                        else None
+                    )
             },
             status=status.HTTP_200_OK
         )
