@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "resources_app",
     "certificates",
     "notifications",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
