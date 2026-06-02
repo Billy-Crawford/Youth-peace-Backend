@@ -21,12 +21,17 @@ SECRET_KEY = os.getenv("SECRET_KEY", "fallback-dev-key")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 # DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".onrender.com",
-]
+# ALLOWED_HOSTS = [
+#     "localhost",
+#     "127.0.0.1",
+#     ".onrender.com",
+# ]
 # ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1,.onrender.com"
+).split(",")
 
 # Application definition
 
@@ -44,6 +49,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "drf_spectacular",
+    "cloudinary",
+    "cloudinary_storage",
 
     # Local Apps
     "accounts",
@@ -184,4 +191,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 LANGUAGE_CODE = "fr-fr"
 
 TIME_ZONE = "Africa/Lome"
+
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+}
+
+DEFAULT_FILE_STORAGE = (
+    "cloudinary_storage.storage.MediaCloudinaryStorage"
+)
 
