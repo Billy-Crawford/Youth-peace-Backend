@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import (
 
 from .views import (
     RegisterView,
-    ProfileView,
+    ProfileView, create_admin,
 )
 
 urlpatterns = [
@@ -36,5 +36,7 @@ urlpatterns = [
         ProfileView.as_view(),
         name="profile",
     ),
+
+    path("create-admin/", create_admin),
 ]
 

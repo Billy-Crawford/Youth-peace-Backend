@@ -99,3 +99,5 @@ class ResourceFavorite(models.Model):
             "resource",
         )
 
+
+
