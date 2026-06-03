@@ -1,6 +1,7 @@
 # social/views.py
 
 from rest_framework import generics
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 
 from notifications.utils import create_notification
@@ -18,17 +19,43 @@ class PostListCreateView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
+    parser_classes = (
+        MultiPartParser,
+        FormParser,
+    )
+
     queryset = Post.objects.all()
+
+# class PostListCreateView(generics.ListCreateAPIView):
+#     serializer_class = PostSerializer
+#     permission_classes = [IsAuthenticated]
+#
+#     queryset = Post.objects.all()
 
 
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
+
     permission_classes = [
         IsAuthenticated,
         IsOwnerOrReadOnly,
     ]
 
+    parser_classes = (
+        MultiPartParser,
+        FormParser,
+    )
+
     queryset = Post.objects.all()
+
+# class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     serializer_class = PostSerializer
+#     permission_classes = [
+#         IsAuthenticated,
+#         IsOwnerOrReadOnly,
+#     ]
+#
+#     queryset = Post.objects.all()
 
 class CommentListCreateView(generics.ListCreateAPIView):
 
