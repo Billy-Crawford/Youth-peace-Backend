@@ -505,55 +505,89 @@ class CompleteLessonView(APIView):
 
 
 
+
 class CourseProgressView(APIView):
 
-    permission_classes = [
-        IsAuthenticated
-    ]
+    permission_classes = [IsAuthenticated]
 
-    def get(
-        self,
-        request,
-        course_id
-    ):
+    def get(self, request, course_id):
 
-        course = get_object_or_404(
-            Course,
-            id=course_id
-        )
+        course = get_object_or_404(Course, id=course_id)
 
-        total_lessons = Lesson.objects.filter(
-            module__course=course
+        total_lessons = Lesson.objects.filter(module__course=course).count()
+
+        completed_lessons = LessonProgress.objects.filter(
+            user=request.user,
+            lesson__module__course=course
         ).count()
 
-        completed_lessons = (
-            LessonProgress.objects.filter(
-                user=request.user,
-                lesson__module__course=course
-            ).count()
-        )
-
         percentage = 0
-
         if total_lessons > 0:
+            percentage = round((completed_lessons / total_lessons) * 100, 2)
 
-            percentage = round(
-                (
-                    completed_lessons
-                    / total_lessons
-                ) * 100,
-                2
-            )
+        quiz = getattr(course, "quiz", None)
 
         return Response({
             "course": course.title,
             "total_lessons": total_lessons,
             "completed_lessons": completed_lessons,
             "progress_percentage": percentage,
-            "completed": (
-                completed_lessons
-                == total_lessons
-                and total_lessons > 0
-            )
+            "completed": (completed_lessons == total_lessons and total_lessons > 0),
+
+            # ✅ AJOUT IMPORTANT
+            "quiz_id": str(quiz.id) if quiz else None,
+            "quiz_title": quiz.title if quiz else None,
         })
+
+# class CourseProgressView(APIView):
+#
+#     permission_classes = [
+#         IsAuthenticated
+#     ]
+#
+#     def get(
+#         self,
+#         request,
+#         course_id
+#     ):
+#
+#         course = get_object_or_404(
+#             Course,
+#             id=course_id
+#         )
+#
+#         total_lessons = Lesson.objects.filter(
+#             module__course=course
+#         ).count()
+#
+#         completed_lessons = (
+#             LessonProgress.objects.filter(
+#                 user=request.user,
+#                 lesson__module__course=course
+#             ).count()
+#         )
+#
+#         percentage = 0
+#
+#         if total_lessons > 0:
+#
+#             percentage = round(
+#                 (
+#                     completed_lessons
+#                     / total_lessons
+#                 ) * 100,
+#                 2
+#             )
+#
+#         return Response({
+#             "course": course.title,
+#             "total_lessons": total_lessons,
+#             "completed_lessons": completed_lessons,
+#             "progress_percentage": percentage,
+#             "completed": (
+#                 completed_lessons
+#                 == total_lessons
+#                 and total_lessons > 0
+#             )
+#         })
 

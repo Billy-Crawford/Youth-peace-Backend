@@ -123,7 +123,6 @@ class ModuleNestedSerializer(
             "lessons",
         )
 
-
 class CourseDetailSerializer(
     serializers.ModelSerializer
 ):
@@ -134,6 +133,9 @@ class CourseDetailSerializer(
     )
 
     creator_name = serializers.SerializerMethodField()
+
+    quiz_id = serializers.SerializerMethodField()
+    quiz_title = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -146,6 +148,8 @@ class CourseDetailSerializer(
             "is_published",
             "creator_name",
             "modules",
+            "quiz_id",
+            "quiz_title",
             "created_at",
         )
 
@@ -157,6 +161,58 @@ class CourseDetailSerializer(
             f"{obj.created_by.first_name} "
             f"{obj.created_by.last_name}"
         )
+
+    def get_quiz_id(
+        self,
+        obj
+    ):
+        if hasattr(obj, "quiz"):
+            return str(obj.quiz.id)
+
+        return None
+
+    def get_quiz_title(
+        self,
+        obj
+    ):
+        if hasattr(obj, "quiz"):
+            return obj.quiz.title
+
+        return None
+
+# class CourseDetailSerializer(
+#     serializers.ModelSerializer
+# ):
+#
+#     modules = ModuleNestedSerializer(
+#         many=True,
+#         read_only=True
+#     )
+#
+#     creator_name = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = Course
+#
+#         fields = (
+#             "id",
+#             "title",
+#             "description",
+#             "thumbnail",
+#             "is_published",
+#             "creator_name",
+#             "modules",
+#             "created_at",
+#         )
+#
+#     def get_creator_name(
+#         self,
+#         obj
+#     ):
+#         return (
+#             f"{obj.created_by.first_name} "
+#             f"{obj.created_by.last_name}"
+#         )
 
 
 class ChoiceSerializer(
