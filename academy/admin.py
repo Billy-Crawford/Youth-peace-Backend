@@ -1,3 +1,5 @@
+# academy/admin.py
+
 from django.contrib import admin
 
 from .models import (
@@ -99,3 +101,16 @@ class LessonProgressAdmin(admin.ModelAdmin):
         "completed_at",
     )
 
+
+
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 4  # affiche 4 champs par défaut
+    min_num = 1
+    max_num = 10
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ("question_text", "quiz")
+    inlines = [ChoiceInline]
