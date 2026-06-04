@@ -505,13 +505,10 @@ class CompleteLessonView(APIView):
 
 
 
-from .models import Course, Lesson, LessonProgress, Quiz
-
 class CourseProgressView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, course_id):
-
         course = get_object_or_404(Course, id=course_id)
 
         total_lessons = Lesson.objects.filter(module__course=course).count()
@@ -525,16 +522,17 @@ class CourseProgressView(APIView):
         if total_lessons > 0:
             percentage = round((completed_lessons / total_lessons) * 100, 2)
 
-        # 🔥 FIX IMPORTANT ICI
-        quiz = Quiz.objects.filter(course=course).first()
+        # ⚠️ IMPORTANT : récupérer quiz proprement
+        quiz = Quiz.objects.filter(course=course).only("id", "title").first()
 
         return Response({
             "course": course.title,
             "total_lessons": total_lessons,
             "completed_lessons": completed_lessons,
             "progress_percentage": percentage,
-            "completed": (completed_lessons == total_lessons and total_lessons > 0),
+            "completed": total_lessons > 0 and completed_lessons == total_lessons,
 
+            # 🔥 toujours string ou null explicite
             "quiz_id": str(quiz.id) if quiz else None,
             "quiz_title": quiz.title if quiz else None,
         })
