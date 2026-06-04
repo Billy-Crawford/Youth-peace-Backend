@@ -2,6 +2,7 @@
 
 from django.urls import path
 
+from .serializers import CertificateDetailView, CertificateDownloadView
 from .views import (
     MyCertificatesView, VerifyCertificateView,
 )
@@ -19,5 +20,9 @@ urlpatterns = [
         VerifyCertificateView.as_view(),
         name="verify-certificate",
     ),
+
+    path("<str:certificate_number>/", CertificateDetailView.as_view()),
+    path("<str:certificate_number>/download/", CertificateDownloadView.as_view()),
+
 ]
 
